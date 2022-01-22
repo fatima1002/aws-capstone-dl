@@ -14,16 +14,16 @@ import os
 import sys
 import time
 
-# import smdebug.pytorch as smd
-# from smdebug import modes
+import smdebug.pytorch as smd
+from smdebug import modes
 # from smdebug.profiler.utils import str2bool
-# from smdebug.pytorch import get_hook
+from smdebug.pytorch import get_hook
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
-def test(model, test_loader,criterion, device):
+def test(model, test_loader,criterion, device, hook):
     '''
     TODO: Complete this function that can take a model and a 
           testing data loader and will get the test accuray/loss of the model
@@ -32,7 +32,7 @@ def test(model, test_loader,criterion, device):
     # ===================================================#
     # 3. Set the SMDebug hook for the validation phase. #
     # ===================================================#
-    # hook.set_mode(smd.modes.EVAL)
+    hook.set_mode(smd.modes.EVAL)
     print("Testing Model on Whole Testing Dataset")
     model.eval()
     running_loss=0
@@ -54,7 +54,7 @@ def test(model, test_loader,criterion, device):
 def train(model, train_loader,
          validation_loader, criterion, 
          optimizer, args, 
-         device):
+         device, hook):
 
     '''
     TODO: Complete this function that can take a model and
@@ -68,25 +68,25 @@ def train(model, train_loader,
     # =================================================#
     # 2. Set the SMDebug hook for the training phase. #
     # =================================================#
-    # hook.set_mode(smd.modes.TRAIN)
-    # hook.register_loss(criterion)  
+    hook.set_mode(smd.modes.TRAIN)
+    hook.register_loss(criterion)  
 
     for epoch in range(epochs):
         for phase in ['train', 'valid']:
             print(f"Epoch {epoch}, Phase {phase}")
             if phase=='train':
-                # hook.set_mode(modes.TRAIN)
+                hook.set_mode(modes.TRAIN)
                 model.train()
             else:
-                # hook.set_mode(modes.EVAL)
+                hook.set_mode(modes.EVAL)
                 model.eval()
             running_loss = 0.0
             running_corrects = 0
             running_samples=0
 
             for step, (inputs, labels) in enumerate(image_dataset[phase]):
-                # inputs=inputs.to(device)
-                # labels=labels.to(device)
+                inputs=inputs.to(device)
+                labels=labels.to(device)
                 outputs = model(inputs)
                 loss = criterion(outputs, labels)
 
@@ -153,8 +153,8 @@ def create_data_loaders(args):
     depending on whether you need to use data loaders or not
     '''
 
-    traindir = args.train#os.path.join(args.data_dir , 'train')
-    testdir = args.test#os.path.join(args.data_dir, 'test')
+    traindir = os.path.join(args.data_dir , 'train') #args.train
+    testdir = os.path.join(args.data_dir, 'test') #args.test
     
     training_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(p=0.5),
@@ -197,14 +197,15 @@ def main(args):
     # ======================================================#
     # 4. Register the SMDebug hook to save output tensors. #
     # ======================================================#
-    # hook = smd.Hook.create_from_json_file()
-    # hook.register_hook(model)
+    hook = smd.Hook.create_from_json_file()
+    hook.register_hook(model)
 
     '''
     TODO: Create your loss and optimizer
     '''
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.fc.parameters(), lr=args.lr)
+    hook.register_loss(criterion)
     
     '''
     TODO: Call the train function to start training your model
@@ -213,13 +214,13 @@ def main(args):
     logger.info('create data loaders')
     trainloader , testloader = create_data_loaders(args)
     logger.info('training model')
-    model = train(model, trainloader,testloader, criterion, optimizer, args, device)
+    model = train(model, trainloader,testloader, criterion, optimizer, args, device, hook)
 
     '''
     TODO: Test the model to see its accuracy
     '''
     logger.info('final model accuracy')
-    test(model, testloader, criterion, device)
+    test(model, testloader, criterion, device, hook)
 
     '''
     TODO: Save the trained model
@@ -253,13 +254,11 @@ if __name__=='__main__':
         "--lr", type=float, default=1.0, metavar="LR", help="learning rate (default: 1.0)"
     )
 
-
     parser.add_argument("--model_dir", type=str, default=os.environ["SM_MODEL_DIR"])
     parser.add_argument('--output_dir', type=str, default=os.environ['SM_OUTPUT_DATA_DIR'])
-    parser.add_argument('--train', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
-    parser.add_argument('--test', type=str, default=os.environ['SM_CHANNEL_TEST'])
-
-
+    parser.add_argument("--data-dir", type=str, default=os.environ["SM_CHANNEL_TRAINING"])
+#     parser.add_argument('--train', type=str,default=os.environ['SM_CHANNEL_TRAIN'])
+#     parser.add_argument('--test', type=str, default=os.environ['SM_CHANNEL_TEST'])
 
     args=parser.parse_args()
 
