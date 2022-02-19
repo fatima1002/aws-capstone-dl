@@ -130,7 +130,7 @@ def train(model, train_loader,
             break
     return model
 
-    
+# BASELINE MODEL  
 def net():
     '''
     TODO: Complete this function that initializes your model
@@ -144,6 +144,26 @@ def net():
     num_features=model.fc.in_features ##check how many features present in output of the model
     model.fc = nn.Sequential(
                 nn.Linear(num_features, 5)) 
+    return model
+
+# DEEPER MODEL  
+def net_dl():
+    '''
+    TODO: Complete this function that initializes your model
+          Remember to use a pretrained model
+    '''
+    model = models.resnet18(pretrained=True)
+    #freeze the convolutional layer 
+    for param in model.parameters():
+        param.requires_grad = False   
+    # then add fully connected layer
+    num_features=model.fc.in_features ##check how many features present in output of the model
+    model.fc = nn.Sequential(
+                   nn.Linear(num_features, 475),
+                   nn.ReLU(inplace = True),
+                   nn.Linear(475, 325), 
+                   nn.ReLU(inplace=True),
+                   nn.Linear(325, 5)) 
     return model
 
 
