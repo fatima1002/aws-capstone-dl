@@ -1,25 +1,30 @@
-**NOTE:** This file is a template that you can use to create the README for your project. The **TODO** comments below will highlight the information you should be sure to include.
+# Object detection on Amazon Bin Images
 
-# Your Project Title Here
-
-**TODO:** Write a short introduction to your project.
+This repo contains the the Capstone project soluton to Udacity AWS Machine Learning Engineer Nanodegree Program. The project consists of using a pre-trained CNN and applying transfer learning to predict the number of items in an image. The project was conducted in AWS sagemaker instance.
 
 ## Project Set Up and Installation
 **OPTIONAL:** If your project has any special installation steps, this is where you should put it. To turn this project into a professional portfolio project, you are encouraged to make your `README` detailed and self-explanatory. For instance, here you could explain how to set up your project in AWS and provide helpful screenshots of the process.
 
+
 ## Dataset
 
 ### Overview
-**TODO**: Explain about the data you are using and where you got it from.
+The dataset has been provided by Amazon[https://registry.opendata.aws/amazon-bin-imagery/]. A subset of this data has been downloaded using file_list.json
 
 ### Access
-**TODO**: Explain how you are accessing the data in AWS and how you uploaded it
+Download the data from a publicly available repo using wget and unzip data into the AWS filesystem (s3)
 
 ## Model Training
+
 **TODO**: What kind of model did you choose for this experiment and why? Give an overview of the types of hyperparameters that you specified and why you chose them. Also remember to evaluate the performance of your model.
+
+1. CNN chosen: ResNet18
+
 
 ## Machine Learning Pipeline
 **TODO:** Explain your project pipeline.
 
 ## Standout Suggestions
-**TODO (Optional):** This is where you can provide information about any standout suggestions that you have attempted.
+ 1. Hyperparameter Tuning
+ 2. Debugger and Profiler
+ 
