@@ -136,7 +136,7 @@ def net():
     TODO: Complete this function that initializes your model
           Remember to use a pretrained model
     '''
-    model = models.resnet18(pretrained=True)
+    model = models.resnet50(pretrained=True)
     #freeze the convolutional layer 
     for param in model.parameters():
         param.requires_grad = False   
@@ -152,7 +152,7 @@ def net_dl():
     TODO: Complete this function that initializes your model
           Remember to use a pretrained model
     '''
-    model = models.resnet18(pretrained=True)
+    model = models.resnet50(pretrained=True)
     #freeze the convolutional layer 
     for param in model.parameters():
         param.requires_grad = False   
@@ -180,12 +180,14 @@ def create_data_loaders(args):
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.Resize((224,224)),
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
 
     testing_transform = transforms.Compose([
         transforms.Resize((224,224)),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
 
     trainset = torchvision.datasets.ImageFolder(
         root=traindir, 
@@ -211,7 +213,7 @@ def main(args):
     '''
     TODO: Initialize a model by calling the net function
     '''
-    model=net()
+    model= net_dl() #net() : changing the network from baseline model
     model.to(device)
 
     # ======================================================#

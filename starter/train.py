@@ -136,7 +136,7 @@ def net():
     TODO: Complete this function that initializes your model
           Remember to use a pretrained model
     '''
-    model = models.resnet18(pretrained=True)
+    model = models.resnet50(pretrained=True)
     #freeze the convolutional layer 
     for param in model.parameters():
         param.requires_grad = False   
