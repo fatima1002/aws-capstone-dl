@@ -12,7 +12,7 @@ To set up a project please do the following:
 ## Dataset
 
 ### Overview
-The dataset has been provided by Amazon[https://registry.opendata.aws/amazon-bin-imagery/]. A subset of this data has been downloaded using file_list.json
+The dataset has been provided by [Amazon](https://registry.opendata.aws/amazon-bin-imagery/). A subset of this data has been downloaded using file_list.json
 
 ### Access
 Download the data from a publicly available repo using wget and unzip data into the AWS filesystem (s3)
